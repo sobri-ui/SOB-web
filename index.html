@@ -119,6 +119,33 @@
         let currentSelectedSurah = null;
         let showTranslation = true;
         
+        // Fungsi Logik Tukar Tema Gelap / Terang
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('sob-quran-theme', targetTheme);
+            
+            // Tukar ikon butang
+            const icon = document.getElementById('themeIcon');
+            if (targetTheme === 'light') {
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // Semak tema pilihan lama semasa aplikasi mula dibuka
+        const savedTheme = localStorage.getItem('sob-quran-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.addEventListener("DOMContentLoaded", () => {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = savedTheme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            }
+        });
+        
         let isRadioMode = false;
         let currentRadioSurahNum = 1;
         let currentQariServer = "https://server12.mp3quran.net/maher/";
