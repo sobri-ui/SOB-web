@@ -54,17 +54,19 @@
                 <div class="header-right-arab" id="headerArab"></div>
                 
                 <div class="control-buttons">
-    <button class="icon-control-btn" id="themeToggleBtn" title="Tukar Tema" onclick="toggleTheme()">
-        <i class="fa-solid fa-sun" id="themeIcon"></i>
-    </button>
-    
-    <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
-        <i class="fa-solid fa-gear"></i>
-    </button>
-    <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
-        <i class="fa-solid fa-bars"></i>
-    </button>
-</div>
+                    <button class="icon-control-btn" id="themeToggleBtn" title="Tukar Tema" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun" id="themeIcon"></i>
+                    </button>
+                    
+                    <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         
         <div class="reader-container" id="readerContainer">
             <div class="status-msg">
@@ -119,33 +121,6 @@
         let currentSelectedSurah = null;
         let showTranslation = true;
         
-        // Fungsi Logik Tukar Tema Gelap / Terang
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            document.documentElement.setAttribute('data-theme', targetTheme);
-            localStorage.setItem('sob-quran-theme', targetTheme);
-            
-            // Tukar ikon butang
-            const icon = document.getElementById('themeIcon');
-            if (targetTheme === 'light') {
-                icon.className = 'fa-solid fa-moon';
-            } else {
-                icon.className = 'fa-solid fa-sun';
-            }
-        }
-
-        // Semak tema pilihan lama semasa aplikasi mula dibuka
-        const savedTheme = localStorage.getItem('sob-quran-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.addEventListener("DOMContentLoaded", () => {
-            const icon = document.getElementById('themeIcon');
-            if (icon) {
-                icon.className = savedTheme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-            }
-        });
-        
         let isRadioMode = false;
         let currentRadioSurahNum = 1;
         let currentQariServer = "https://server12.mp3quran.net/maher/";
@@ -156,7 +131,29 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
+        // --- SKRIP LOGIK TUKAR TEMA (LIGHT & DARK THEME) ---
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('sob-quran-theme', targetTheme);
+            updateThemeIcon(targetTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = theme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            }
+        }
+
+        // Semak tema yang disimpan sebelum ini
+        const savedTheme = localStorage.getItem('sob-quran-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
         document.addEventListener("DOMContentLoaded", () => {
+            updateThemeIcon(savedTheme);
             if (typeof quranData !== 'undefined') {
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
@@ -531,8 +528,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Aktif:', reg.scope))
-                    .catch(err => console.log('PWA Gagal:', err));
+                    .then(reg => console.log('PWA Service Worker Berjaya!', reg.scope))
+                    .catch(err => console.log('PWA Gagal Bermula:', err));
             });
         }
     </script>
