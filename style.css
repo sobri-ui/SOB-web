@@ -1,0 +1,813 @@
+/* --- SUNTIKAN STRUKTUR ASAL DAN PEMBOLEH UBAH FON --- */
+:root {
+    --bg-main: #121214;          
+    --bg-surface: #1c1c1f;       
+    --bg-surface-hover: #26262b; 
+    --text-primary: #f3f4f6;     
+    --text-muted: #9ca3af;       
+    --brand-color: #2ec4b6;      
+    --brand-glow: rgba(46, 196, 182, 0.25);
+    --border-color: #2d2d34;     
+    --primary-light: #1a2e2b;    
+    
+    --arabic-font-size: 2.2rem;
+    --trans-font-size: 1.05rem;
+}
+
+/* --- LOGIK REKA BENTUK INPUT BERSEPADU --- */
+.search-input-wrapper {
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.search-trigger-btn {
+    position: absolute;
+    right: 5px;
+    background-color: var(--brand-color);
+    border: none;
+    color: #121214;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.search-trigger-btn:hover {
+    background-color: #24a89c;
+}
+
+.hidden-btn {
+    display: none !important;
+}
+
+/* --- INTEGRASI FON UTMANIC SCRIPT --- */
+@font-face {
+    font-family: 'KFGQPC Hafs Uthmanic Script';
+    src: url('SOB KFGQPC HAFS Uthmanic Script Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- MODAL TETAPAN PAPARAN (POPUP) --- */
+.custom-modal {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    animation: fadeIn 0.25s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.modal-header h3 {
+    font-size: 1.15rem;
+    color: var(--brand-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.close-modal {
+    font-size: 24px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #ff5b5b;
+}
+
+.setting-item {
+    margin-bottom: 18px;
+}
+
+.setting-item label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.setting-item input[type="range"] {
+    width: 100%;
+    accent-color: var(--brand-color);
+    cursor: pointer;
+}
+
+.menu-item-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.menu-item-toggle label {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.menu-item-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--brand-color);
+    cursor: pointer;
+}
+
+.menu-divider {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 15px 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* --- SIDEBAR DESIGN (DESKTOP LALAI) --- */
+.sidebar {
+    width: 350px;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sidebar-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-header h1 span {
+    color: var(--brand-color);
+}
+
+.close-sidebar-btn {
+    display: none; /* Hanya muncul di mobile */
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Sistem Tab Carian */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.search-tabs {
+    display: flex;
+    background-color: var(--bg-main);
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background-color: var(--bg-surface);
+    color: var(--brand-color);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.search-box {
+    width: 100%;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 40px 10px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-box:focus {
+    border-color: var(--brand-color);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.surah-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.surah-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.surah-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+.surah-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 5px;
+    border: 1px solid transparent;
+}
+
+.surah-item:hover {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-color);
+}
+
+.surah-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.surah-num {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background-color: var(--bg-main);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+.surah-name-rumi {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.surah-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.surah-name-arab {
+    font-family: 'KFGQPC Hafs Uthmanic Script', serif;
+    font-size: 1.25rem;
+    color: var(--brand-color);
+    direction: rtl;
+}
+
+/* --- MAIN CONTENT WINDOW --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-main);
+    overflow: hidden;
+}
+
+.main-header {
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.header-left h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.meta-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.header-right-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-right-arab {
+    font-family: 'KFGQPC Hafs Uthmanic Script', serif;
+    font-size: 1.8rem;
+    color: var(--brand-color);
+    direction: rtl;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-control-btn {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.icon-control-btn:hover {
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+    background-color: var(--primary-light);
+}
+
+/* --- READER AREA --- */
+.reader-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.reader-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reader-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+.status-msg {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+    font-size: 0.95rem;
+}
+
+.status-msg-success {
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* --- STRUKTUR BISMILLAH BESERTA TERJEMAHAN --- */
+.bismillah-wrapper {
+    text-align: center;
+    padding: 20px 0 35px 0;
+    border-bottom: 1px dashed var(--border-color);
+    margin-bottom: 10px;
+}
+
+.bismillah-container {
+    font-family: 'KFGQPC Hafs Uthmanic Script', serif;
+    font-size: 2.3rem;
+    color: var(--text-primary);
+    direction: rtl;
+    margin-bottom: 12px;
+}
+
+.bismillah-translation {
+    font-size: var(--trans-font-size);
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* --- STRUKTUR KAD AYAT (VERSE CARD) --- */
+.verse-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: border-color 0.2s;
+}
+
+.verse-card:hover {
+    border-color: #3d3d47;
+}
+
+.verse-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.verse-key {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-color);
+    background-color: var(--primary-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.verse-arabic {
+    font-family: 'KFGQPC Hafs Uthmanic Script', serif;
+    font-size: var(--arabic-font-size);
+    line-height: 2.4; 
+    color: var(--text-primary);
+    direction: rtl;
+    text-align: right;
+}
+
+.verse-translation {
+    font-size: var(--trans-font-size);
+    line-height: 1.8;
+    color: var(--text-muted);
+    text-align: left;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 15px;
+}
+
+.hidden-translation {
+    display: none !important;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+}
+
+.search-card-bounce {
+    animation: slideUp 0.3s ease-out;
+}
+
+.highlight-word {
+    background-color: rgba(46, 196, 182, 0.3);
+    color: #ffffff;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.highlight-flash {
+    animation: flashActive 2s ease-in-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flashActive {
+    0% { border-color: var(--brand-color); box-shadow: 0 0 15px var(--brand-glow); }
+    50% { border-color: var(--brand-color); box-shadow: 0 0 15px var(--brand-glow); }
+    100% { border-color: var(--border-color); box-shadow: none; }
+}
+
+/* --- RADIO PLAYER --- */
+.radio-player-card {
+    position: relative;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 45px 40px 40px 40px;
+    max-width: 550px;
+    margin: 40px auto;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideUp 0.35s ease-out;
+}
+
+.close-radio-btn {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: #ff5b5b;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.close-radio-btn:hover {
+    background-color: #ff5b5b;
+    color: #ffffff;
+    border-color: #ff5b5b;
+    transform: scale(1.08);
+}
+
+.radio-visualizer {
+    width: 100px;
+    height: 100px;
+    background-color: var(--primary-light);
+    border: 2px solid var(--brand-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px auto;
+}
+
+.radio-visualizer i {
+    font-size: 36px;
+    color: var(--brand-color);
+}
+
+.class-pulse {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.12); opacity: 1; text-shadow: 0 0 10px var(--brand-color); }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.radio-surah-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.radio-surah-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.qari-selector-wrapper {
+    background-color: var(--bg-main);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.qari-selector-wrapper label {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.qari-dropdown {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.radio-tips {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    background-color: rgba(255,255,255,0.02);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed var(--border-color);
+}
+
+.radio-mode-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #2ec4b6 0%, #24a89c 100%);
+    color: #121214;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Butang Terapung Lalai disembunyikan (Hanya untuk Mobile) */
+.mobile-sidebar-toggle {
+    display: none;
+}
+
+/* ==========================================================================
+   OPTIMASI MOBILE ULTRA-MAX (STICKY HEADER & FULL SCREEN READER)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+    :root {
+        --arabic-font-size: 1.85rem; 
+        --trans-font-size: 0.95rem;  
+    }
+
+    body {
+        flex-direction: column;
+    }
+
+    /* Pengepala Utama sentiasa Melekat (Sticky) di atas skrin */
+    .main-header {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        padding: 12px 16px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        z-index: 999;
+    }
+
+    .header-left h2 {
+        font-size: 1.15rem;
+    }
+
+    .header-right-arab {
+        font-size: 1.35rem;
+    }
+
+    .icon-control-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    /* Tukar Sidebar jadi Drawer Sorok/Papar (Overlay Atas Al-Quran) */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 290px !important;
+        height: 100vh !important;
+        z-index: 2100;
+        transform: translateX(-100%); /* Sembunyi ke kiri skrin asal */
+        box-shadow: 5px 0 25px rgba(0,0,0,0.6);
+    }
+
+    /* Apabila kelas .open ditambah melalui Javascript */
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .close-sidebar-btn {
+        display: block; /* Papar butang pangkah (✕) */
+    }
+
+    /* Kawasan Kandungan Pembaca Mengambil 100% Ruang Penuh Skrin */
+    .main-content {
+        width: 100% !important;
+        height: calc(100vh - 60px);
+    }
+
+    .reader-container {
+        padding: 16px;
+        gap: 14px;
+        padding-bottom: 80px; /* Ruang tambahan supaya ayat terakhir tidak ditutupi butang terapung */
+    }
+
+    .bismillah-container {
+        font-size: 1.85rem;
+    }
+
+    .verse-card {
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .verse-arabic {
+        line-height: 2.2;
+    }
+
+    /* BUTANG TERAPUNG (FLOATING ACTION BUTTON) DI BAWAH SKRIN MOBILE */
+    .mobile-sidebar-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--brand-color);
+        color: #121214;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(46, 196, 182, 0.4);
+        z-index: 1000;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .mobile-sidebar-toggle:active {
+        transform: translateX(-50%) scale(0.95);
+    }
+}

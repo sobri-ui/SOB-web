@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOB Al-Quran Digital & Terjemahan Bahasa Melayu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="quran.js"></script>
+    <script src="translation_efficient.js"></script>
+</head>
+<body>
+
+    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">
+        <i class="fa-solid fa-list-ul"></i> Senarai Surah
+    </button>
+
+    <div class="sidebar" id="sidebarContainer">
+        <div class="sidebar-header">
+            <div class="sidebar-top-row">
+                <h1><span>📖</span> SOB Al-Quran</h1>
+                <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">&times;</button>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-tabs">
+                    <button class="tab-btn active" onclick="switchSearchTab('surah', this)">Surah</button>
+                    <button class="tab-btn" onclick="switchSearchTab('juzuk', this)">Juzuk</button>
+                    <button class="tab-btn" onclick="switchSearchTab('teks', this)">Cari Teks</button>
+                </div>
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchSurah" class="search-box" placeholder="Cari nama atau nombor surah...">
+                    <button id="searchActionBtn" class="search-trigger-btn hidden-btn" onclick="executeAdvancedSearch()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="surah-list" id="surahListContainer"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header" id="mainHeader">
+            <div class="header-left">
+                <h2 id="headerTitle">Sila Pilih Surah</h2>
+                <div class="meta-desc" id="headerMeta">-</div>
+            </div>
+            
+            <div class="header-right-controls">
+                <div class="header-right-arab" id="headerArab"></div>
+                
+                <div class="control-buttons">
+                    <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reader-container" id="readerContainer">
+            <div class="status-msg">
+                <p>Memuatkan data... Sila pilih Surah atau gunakan tab carian di sebelah kiri.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gear"></i> Tetapan Saiz Fon</h3>
+                <span class="close-modal" onclick="toggleModal('settingsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label>Saiz Tulisan Arab: <span id="arabicSizeLabel">2.2rem</span></label>
+                    <input type="range" id="arabicFontSlider" min="1.5" max="4" step="0.1" value="2.2" oninput="updateFontSize('arabic', this.value)">
+                </div>
+                <div class="setting-item">
+                    <label>Saiz Terjemahan: <span id="transSizeLabel">1.05rem</span></label>
+                    <input type="range" id="transFontSlider" min="0.9" max="2" step="0.05" value="1.05" oninput="updateFontSize('trans', this.value)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menuDropdownModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bars"></i> Menu Pilihan</h3>
+                <span class="close-modal" onclick="toggleModal('menuDropdownModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="menu-item-toggle">
+                    <label for="viewModeToggle"><strong>Mod Bacaan Sahaja</strong> (Tanpa Terjemahan)</label>
+                    <input type="checkbox" id="viewModeToggle" onchange="toggleTranslationView()">
+                </div>
+                <hr class="menu-divider">
+                
+                <button class="radio-mode-btn" onclick="activateRadioMode()">
+                    <i class="fa-solid fa-radio"></i> Buka Radio Al-Quran (Dengar Sahaja)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="verseAudioPlayer"></audio>
+
+    <script>
+        let currentSearchTab = 'surah';
+        let currentSelectedSurah = null;
+        let showTranslation = true;
+        
+        let isRadioMode = false;
+        let currentRadioSurahNum = 1;
+        let currentQariServer = "https://server12.mp3quran.net/maher/";
+
+        const juzukMapping = {
+            1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8,
+            11: 9, 12: 11, 13: 12, 14: 15, 15: 17, 16: 18, 17: 21, 18: 23, 19: 25, 20: 27,
+            21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof quranData !== 'undefined') {
+                renderSurahList(quranData);
+                displaySurah(quranData[0]);
+            }
+        });
+
+        function switchSearchTab(tab, element) {
+            currentSearchTab = tab;
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            const searchInput = document.getElementById('searchSurah');
+            const actionBtn = document.getElementById('searchActionBtn');
+            searchInput.value = '';
+
+            if (tab === 'surah') {
+                searchInput.placeholder = "Cari nama atau nombor surah...";
+                actionBtn.classList.add('hidden-btn');
+                renderSurahList(quranData);
+            } else if (tab === 'juzuk') {
+                searchInput.placeholder = "Masukkan No Juzuk (1 - 30)...";
+                actionBtn.classList.add('hidden-btn');
+                renderSurahList(quranData);
+            } else if (tab === 'teks') {
+                searchInput.placeholder = "Cari teks Arab, Rumi, Maksud...";
+                actionBtn.classList.remove('hidden-btn');
+            }
+        }
+
+        document.getElementById('searchSurah').addEventListener('input', (e) => {
+            const keyword = e.target.value.trim().toLowerCase();
+            if (currentSearchTab === 'teks') return;
+
+            if (!keyword) {
+                renderSurahList(quranData);
+                return;
+            }
+
+            let filtered = [];
+            if (currentSearchTab === 'surah') {
+                filtered = quranData.filter(surah => 
+                    surah.nama_surah_rumi.toLowerCase().includes(keyword) || 
+                    surah.nombor_surah.toString().includes(keyword)
+                );
+            } else if (currentSearchTab === 'juzuk') {
+                const juzNo = parseInt(keyword);
+                if (juzNo >= 1 && juzNo <= 30) {
+                    const surahNo = juzukMapping[juzNo];
+                    filtered = quranData.filter(surah => surah.nombor_surah === surahNo);
+                }
+            }
+            renderSurahList(filtered);
+        });
+
+        document.getElementById('searchSurah').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && currentSearchTab === 'teks') {
+                executeAdvancedSearch();
+            }
+        });
+
+        function renderSurahList(data) {
+            const container = document.getElementById('surahListContainer');
+            container.innerHTML = '';
+            
+            data.forEach(surah => {
+                const item = document.createElement('div');
+                item.className = 'surah-item';
+                item.innerHTML = `
+                    <div class="surah-info">
+                        <div class="surah-num">${surah.nombor_surah}</div>
+                        <div>
+                            <div class="surah-name-rumi">${surah.nama_surah_rumi}</div>
+                            <div class="surah-meta">${surah.pengelasan} • ${surah.jumlah_ayat} Ayat</div>
+                        </div>
+                    </div>
+                    <div class="surah-name-arab">${surah.nama_surah_arab}</div>
+                `;
+                item.addEventListener('click', () => {
+                    if (isRadioMode) {
+                        changeRadioSurah(surah.nombor_surah);
+                    } else {
+                        displaySurah(surah);
+                    }
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebarContainer').classList.remove('open');
+                    }
+                });
+                container.appendChild(item);
+            });
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebarContainer');
+            sidebar.classList.toggle('open');
+        }
+
+        function removeArabicDiacritics(text) {
+            return text.replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, "");
+        }
+
+        function highlightText(sourceText, keyword, isArabic = false) {
+            if (!keyword) return sourceText;
+            if (isArabic) {
+                const cleanSource = removeArabicDiacritics(sourceText);
+                const cleanKeyword = removeArabicDiacritics(keyword);
+                const index = cleanSource.toLowerCase().indexOf(cleanKeyword.toLowerCase());
+                if (index === -1) return sourceText;
+                
+                let startPosInSource = -1;
+                let matchLength = 0;
+                for (let i = 0; i < sourceText.length; i++) {
+                    if (removeArabicDiacritics(sourceText.substr(0, i)).length === index && startPosInSource === -1) {
+                        startPosInSource = i;
+                    }
+                    if (startPosInSource !== -1) {
+                        if (removeArabicDiacritics(sourceText.substr(startPosInSource, i - startPosInSource)).length === cleanKeyword.length) {
+                            matchLength = i - startPosInSource;
+                            break;
+                        }
+                    }
+                }
+                if (startPosInSource !== -1 && matchLength > 0) {
+                    const exactMatchText = sourceText.substr(startPosInSource, matchLength);
+                    return sourceText.replace(exactMatchText, `<mark class="highlight-word">${exactMatchText}</mark>`);
+                }
+                return sourceText;
+            } else {
+                const regex = new RegExp(`(${keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+                return sourceText.replace(regex, '<mark class="highlight-word">$1</mark>');
+            }
+        }
+
+        function executeAdvancedSearch() {
+            isRadioMode = false;
+            const rawKeyword = document.getElementById('searchSurah').value.trim();
+            if (!rawKeyword) return;
+
+            const keyword = rawKeyword.toLowerCase();
+            const cleanArabicKeyword = removeArabicDiacritics(rawKeyword);
+            const reader = document.getElementById('readerContainer');
+            
+            reader.innerHTML = `<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Mencari...</div>`;
+            document.getElementById('headerTitle').innerText = `Hasil Carian`;
+            document.getElementById('headerMeta').innerText = `Kata kunci: "${rawKeyword}"`;
+            document.getElementById('headerArab').innerText = `🔎`;
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebarContainer').classList.remove('open');
+            }
+
+            let matchCount = 0;
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'search-results-wrapper';
+
+            quranData.forEach(surah => {
+                const verses = surah.teks_kandungan.split('\n');
+                verses.forEach((verseText, index) => {
+                    const verseNo = index + 1;
+                    const key = `${surah.nombor_surah}:${verseNo}`;
+                    const translationText = translationData[key] || "";
+                    
+                    if (removeArabicDiacritics(verseText).includes(cleanArabicKeyword) || translationText.toLowerCase().includes(keyword)) {
+                        matchCount++;
+                        const highlightedArabic = highlightText(verseText, rawKeyword, true);
+                        const highlightedTranslation = highlightText(translationText, rawKeyword, false);
+
+                        const resultCard = document.createElement('div');
+                        resultCard.className = 'verse-card search-card-bounce';
+                        resultCard.innerHTML = `
+                            <div class="verse-top">
+                                <span class="verse-key" onclick="goToSurahDirectly(${surah.nombor_surah}, ${verseNo})">
+                                    ${surah.nama_surah_rumi} (${surah.nombor_surah}:${verseNo}) <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </span>
+                                <div class="verse-actions">
+                                    <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
+                                </div>
+                            </div>
+                            <div class="verse-arabic">${highlightedArabic}</div>
+                            <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${highlightedTranslation}</div>
+                        `;
+                        resultsContainer.appendChild(resultCard);
+                    }
+                });
+            });
+
+            reader.innerHTML = '';
+            if (matchCount > 0) {
+                reader.innerHTML = `<div class="status-msg-success">Menemui <strong>${matchCount}</strong> padanan.</div>`;
+                reader.appendChild(resultsContainer);
+            } else {
+                reader.innerHTML = `<div class="status-msg">Tiada hasil ditemui.</div>`;
+            }
+        }
+
+        function displaySurah(surah) {
+            isRadioMode = false;
+            currentSelectedSurah = surah;
+            currentRadioSurahNum = surah.nombor_surah;
+            document.getElementById('headerTitle').innerText = surah.nama_surah_rumi;
+            document.getElementById('headerMeta').innerText = `${surah.pengelasan.toUpperCase()} • ${surah.jumlah_ayat} AYAT`;
+            document.getElementById('headerArab').innerText = surah.nama_surah_arab;
+
+            const reader = document.getElementById('readerContainer');
+            reader.innerHTML = '';
+
+            if (surah.bismillah) {
+                const bismillahWrapper = document.createElement('div');
+                bismillahWrapper.className = 'bismillah-wrapper';
+                bismillahWrapper.innerHTML = `
+                    <div class="bismillah-container">${surah.bismillah}</div>
+                    <div class="bismillah-translation ${showTranslation ? '' : 'hidden-translation'}">Dengan nama Allah, Yang Maha Pemurah, lagi Maha Mengasihani.</div>
+                `;
+                reader.appendChild(bismillahWrapper);
+            }
+
+            const verses = surah.teks_kandungan.split('\n');
+            verses.forEach((verseText, index) => {
+                const verseNo = index + 1;
+                const key = `${surah.nombor_surah}:${verseNo}`;
+                const translationText = translationData[key] || "";
+
+                const verseCard = document.createElement('div');
+                verseCard.className = 'verse-card';
+                verseCard.id = `verse-card-${verseNo}`;
+                verseCard.innerHTML = `
+                    <div class="verse-top">
+                        <span class="verse-key">${surah.nombor_surah}:${verseNo}</span>
+                        <div class="verse-actions">
+                            <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
+                        </div>
+                    </div>
+                    <div class="verse-arabic">${verseText}</div>
+                    <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${translationText}</div>
+                `;
+                reader.appendChild(verseCard);
+            });
+            reader.scrollTop = 0;
+        }
+
+        function goToSurahDirectly(surahNo, verseNo) {
+            const surah = quranData.find(s => s.nombor_surah === surahNo);
+            if(surah) {
+                displaySurah(surah);
+                setTimeout(() => {
+                    const targetCard = document.getElementById(`verse-card-${verseNo}`);
+                    if(targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetCard.classList.add('highlight-flash');
+                    }
+                }, 400);
+            }
+        }
+
+        function activateRadioMode() {
+            isRadioMode = true;
+            toggleModal('menuDropdownModal'); 
+            
+            document.getElementById('headerTitle').innerText = "Radio Al-Quran Digital";
+            document.getElementById('headerMeta').innerText = "Mod Dengar Sahaja";
+            document.getElementById('headerArab').innerText = "📻";
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebarContainer').classList.remove('open');
+            }
+            renderRadioPlayerUI();
+        }
+
+        function closeRadioMode() {
+            isRadioMode = false;
+            const activeSurah = quranData.find(s => s.nombor_surah === currentRadioSurahNum) || quranData[0];
+            displaySurah(activeSurah);
+        }
+
+        function renderRadioPlayerUI() {
+            const reader = document.getElementById('readerContainer');
+            const surahObj = quranData.find(s => s.nombor_surah === currentRadioSurahNum) || quranData[0];
+
+            reader.innerHTML = `
+                <div class="radio-player-card">
+                    <button class="close-radio-btn" onclick="closeRadioMode()">✕</button>
+                    <div class="radio-visualizer"><i class="fa-solid fa-music class-pulse"></i></div>
+                    <h2 class="radio-surah-title">${surahObj.nombor_surah}. ${surahObj.nama_surah_rumi}</h2>
+                    <p class="radio-surah-sub">${surahObj.nama_surah_arab} • ${surahObj.jumlah_ayat} Ayat</p>
+                    <div class="qari-selector-wrapper">
+                        <label for="qariSelect"><i class="fa-solid fa-microphone-lines"></i> Qari:</label>
+                        <select id="qariSelect" class="qari-dropdown" onchange="changeQari(this.value)">
+                            <option value="https://server12.mp3quran.net/maher/" ${currentQariServer.includes('maher')?'selected':''}>Syeikh Maher Al-Muaiqly</option>
+                            <option value="https://server8.mp3quran.net/afs/" ${currentQariServer.includes('afs')?'selected':''}>Syeikh Mishary Al-Afasy</option>
+                            <option value="https://server11.mp3quran.net/sds/" ${currentQariServer.includes('sds')?'selected':''}>Syeikh Abdul Rahman Al-Sudais</option>
+                            <option value="https://server7.mp3quran.net/s_gmd/" ${currentQariServer.includes('s_gmd')?'selected':''}>Syeikh Saad Al-Ghamdi</option>
+                        </select>
+                    </div>
+                    <div class="audio-controls-box-custom">
+                        <audio id="radioMainAudio" controls autoplay style="width:100%;"></audio>
+                    </div>
+                </div>
+            `;
+
+            const paddedSurah = String(currentRadioSurahNum).padStart(3, '0');
+            const audioEl = document.getElementById('radioMainAudio');
+            audioEl.src = `${currentQariServer}${paddedSurah}.mp3`;
+
+            audioEl.onended = function() {
+                if(currentRadioSurahNum < 114) changeRadioSurah(currentRadioSurahNum + 1);
+                else changeRadioSurah(1);
+            };
+        }
+
+        function changeRadioSurah(surahNum) {
+            currentRadioSurahNum = surahNum;
+            if(!isRadioMode) {
+                isRadioMode = true;
+                document.getElementById('headerTitle').innerText = "Radio Al-Quran Digital";
+                document.getElementById('headerMeta').innerText = "Mod Dengar Sahaja";
+                document.getElementById('headerArab').innerText = "📻";
+            }
+            renderRadioPlayerUI();
+        }
+
+        function changeQari(qariUrl) {
+            currentQariServer = qariUrl;
+            renderRadioPlayerUI();
+        }
+
+        function playVerseAudio(surahNo, verseNo) {
+            const paddedSurah = String(surahNo).padStart(3, '0');
+            const paddedVerse = String(verseNo).padStart(3, '0');
+            const player = document.getElementById('verseAudioPlayer');
+            player.src = `https://everyayah.com/data/Alafasy_128kbps/${paddedSurah}${paddedVerse}.mp3`;
+            player.play();
+        }
+
+        function toggleTranslationView() {
+            const isChecked = document.getElementById('viewModeToggle').checked;
+            showTranslation = !isChecked;
+            
+            document.querySelectorAll('.verse-translation, .bismillah-translation').forEach(div => {
+                if (showTranslation) div.classList.remove('hidden-translation');
+                else div.classList.add('hidden-translation');
+            });
+        }
+
+        function updateFontSize(type, value) {
+            if (type === 'arabic') {
+                document.getElementById('arabicSizeLabel').innerText = value + 'rem';
+                document.documentElement.style.setProperty('--arabic-font-size', value + 'rem');
+            } else if (type === 'trans') {
+                document.getElementById('transSizeLabel').innerText = value + 'rem';
+                document.documentElement.style.setProperty('--trans-font-size', value + 'rem');
+            }
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal.style.display === "flex") {
+                modal.style.display = "none";
+            } else {
+                document.querySelectorAll('.custom-modal').forEach(m => m.style.display = 'none');
+                modal.style.display = "flex";
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('custom-modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Aktif:', reg.scope))
+                    .catch(err => console.log('PWA Gagal:', err));
+            });
+        }
+    </script>
+</body>
+</html>
