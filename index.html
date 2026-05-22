@@ -2,12 +2,15 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SOB Al-Quran Digital & Terjemahan Bahasa Melayu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1c1c1f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <script src="quran.js"></script>
     <script src="translation_efficient.js"></script>
@@ -18,59 +21,61 @@
         <i class="fa-solid fa-list-ul"></i> Senarai Surah
     </button>
 
-    <div class="sidebar" id="sidebarContainer">
-        <div class="sidebar-header">
-            <div class="sidebar-top-row">
-                <h1><span>📖</span> SOB Al-Quran</h1>
-                <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">&times;</button>
-            </div>
-            
-            <div class="search-container">
-                <div class="search-tabs">
-                    <button class="tab-btn active" onclick="switchSearchTab('surah', this)">Surah</button>
-                    <button class="tab-btn" onclick="switchSearchTab('juzuk', this)">Juzuk</button>
-                    <button class="tab-btn" onclick="switchSearchTab('teks', this)">Cari Teks</button>
+    <div class="app-container">
+        <div class="sidebar" id="sidebarContainer">
+            <div class="sidebar-header">
+                <div class="sidebar-top-row">
+                    <h1><span>📖</span> SOB Al-Quran</h1>
+                    <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">&times;</button>
                 </div>
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchSurah" class="search-box" placeholder="Cari nama atau nombor surah...">
-                    <button id="searchActionBtn" class="search-trigger-btn hidden-btn" onclick="executeAdvancedSearch()">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="surah-list" id="surahListContainer"></div>
-    </div>
-
-    <div class="main-content">
-        <div class="main-header" id="mainHeader">
-            <div class="header-left">
-                <h2 id="headerTitle">Sila Pilih Surah</h2>
-                <div class="meta-desc" id="headerMeta">-</div>
-            </div>
-            
-            <div class="header-right-controls">
-                <div class="header-right-arab" id="headerArab"></div>
                 
-                <div class="control-buttons">
-                    <button class="icon-control-btn" id="themeToggleBtn" title="Tukar Tema" onclick="toggleTheme()">
-                        <i class="fa-solid fa-sun" id="themeIcon"></i>
-                    </button>
-                    
-                    <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
-                        <i class="fa-solid fa-gear"></i>
-                    </button>
-                    <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
+                <div class="search-container">
+                    <div class="search-tabs">
+                        <button class="tab-btn active" onclick="switchSearchTab('surah', this)">Surah</button>
+                        <button class="tab-btn" onclick="switchSearchTab('juzuk', this)">Juzuk</button>
+                        <button class="tab-btn" onclick="switchSearchTab('teks', this)">Cari Teks</button>
+                    </div>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchSurah" class="search-box" placeholder="Cari nama atau nombor surah...">
+                        <button id="searchActionBtn" class="search-trigger-btn hidden-btn" onclick="executeAdvancedSearch()">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+            
+            <div class="surah-list" id="surahListContainer"></div>
         </div>
-        
-        <div class="reader-container" id="readerContainer">
-            <div class="status-msg">
-                <p>Memuatkan data... Sila pilih Surah atau gunakan tab carian di sebelah kiri.</p>
+
+        <div class="main-content">
+            <div class="main-header" id="mainHeader">
+                <div class="header-left">
+                    <h2 id="headerTitle">Sila Pilih Surah</h2>
+                    <div class="meta-desc" id="headerMeta">-</div>
+                </div>
+                
+                <div class="header-right-controls">
+                    <div class="header-right-arab" id="headerArab"></div>
+                    
+                    <div class="control-buttons">
+                        <button class="icon-control-btn" id="themeToggleBtn" title="Tukar Tema" onclick="toggleTheme()">
+                            <i class="fa-solid fa-sun" id="themeIcon"></i>
+                        </button>
+                        
+                        <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                        <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reader-container" id="readerContainer">
+                <div class="status-msg">
+                    <p>Memuatkan data... Sila pilih Surah atau gunakan tab carian di sebelah kiri.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -131,7 +136,7 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
-        // --- SKRIP LOGIK TUKAR TEMA (LIGHT & DARK THEME) ---
+        // --- SISTEM TUKAR TEMA (LIGHT & DARK THEME) ---
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -148,7 +153,7 @@
             }
         }
 
-        // Semak tema yang disimpan sebelum ini
+        // Semak tema memori lokal peranti
         const savedTheme = localStorage.getItem('sob-quran-theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -528,8 +533,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Service Worker Berjaya!', reg.scope))
-                    .catch(err => console.log('PWA Gagal Bermula:', err));
+                    .then(reg => console.log('PWA Service Worker Aktif!', reg.scope))
+                    .catch(err => console.log('PWA Gagal Didaftarkan:', err));
             });
         }
     </script>
