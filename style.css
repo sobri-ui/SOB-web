@@ -1,4 +1,4 @@
-/* --- SUNTIKAN STRUKTUR ASAL DAN PEMBOLEH UBAH FON --- */
+/* --- TEMA WARNA (DEFAULT: DARK THEME) --- */
 :root {
     --bg-main: #121214;          
     --bg-surface: #1c1c1f;       
@@ -12,6 +12,19 @@
     
     --arabic-font-size: 2.2rem;
     --trans-font-size: 1.05rem;
+}
+
+/* --- TEMA WARNA (LIGHT THEME) --- */
+[data-theme="light"] {
+    --bg-main: #f4f6f9;          
+    --bg-surface: #ffffff;       
+    --bg-surface-hover: #f0f2f5; 
+    --text-primary: #1a1a1e;     
+    --text-muted: #626974;       
+    --brand-color: #009688;      
+    --brand-glow: rgba(0, 150, 136, 0.2);
+    --border-color: #e1e4ea;     
+    --primary-light: #e0f2f1;    
 }
 
 /* --- LOGIK REKA BENTUK INPUT BERSEPADU --- */
