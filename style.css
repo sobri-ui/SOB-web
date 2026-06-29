@@ -1,5 +1,6 @@
-/* --- SUNTIKAN STRUKTUR ASAL DAN PEMBOLEH UBAH FON (TEMA GELAP ASAL) --- */
+/* --- SUNTIKAN STRUKTUR ASAL DAN PEMBOLEH UBAH FON --- */
 :root {
+    /* Nilai Lalai: Tema Gelap */
     --bg-main: #121214;          
     --bg-surface: #1c1c1f;       
     --bg-surface-hover: #26262b; 
@@ -14,31 +15,17 @@
     --trans-font-size: 1.05rem;
 }
 
-/* --- LOGIK SUNTIKAN BAHARU: TEMA CERAH (LIGHT MODE) --- */
-body.light-mode {
-    --bg-main: #f4f5f7;          
+/* --- KONFIGURASI PALET TEMA CERAH (BAHARU) --- */
+[data-theme="light"] {
+    --bg-main: #f5f7f9;          
     --bg-surface: #ffffff;       
-    --bg-surface-hover: #eaeaea; 
-    --text-primary: #121214;     
-    --text-muted: #65656b;       
-    --brand-color: #009688;      
-    --brand-glow: rgba(0, 150, 136, 0.2);
-    --border-color: #d1d5db;     
-    --primary-light: #e0f2f1;    
-}
-
-/* Optimasi kontras elemen khusus bagi tema cerah */
-body.light-mode .highlight-word {
-    background-color: rgba(0, 150, 136, 0.3);
-    color: #004d40;
-}
-
-body.light-mode .radio-tips {
-    background-color: rgba(0, 0, 0, 0.03);
-}
-
-body.light-mode .search-trigger-btn {
-    color: #ffffff;
+    --bg-surface-hover: #edf1f4; 
+    --text-primary: #111827;     
+    --text-muted: #6b7280;       
+    --brand-color: #0f9f90;      
+    --brand-glow: rgba(15, 159, 144, 0.2);
+    --border-color: #e5e7eb;     
+    --primary-light: #e6f7f5;    
 }
 
 /* --- LOGIK REKA BENTUK INPUT BERSEPADU --- */
@@ -94,7 +81,7 @@ body {
     display: flex;
     height: 100vh;
     overflow: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Transisi kelancaran tukar tema */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* --- MODAL TETAPAN PAPARAN (POPUP) --- */
@@ -254,7 +241,6 @@ body {
     padding: 3px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    transition: background-color 0.3s ease;
 }
 
 .tab-btn {
@@ -342,7 +328,6 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 6px;
-    transition: background-color 0.3s ease;
 }
 
 .surah-name-rumi {
@@ -506,15 +491,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    transition: border-color 0.2s, background-color 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.2s ease;
 }
 
 .verse-card:hover {
     border-color: #3d3d47;
 }
 
-body.light-mode .verse-card:hover {
-    border-color: #bfa3a3; /* Menyesuaikan sedikit kelembutan border hover tema cerah */
+[data-theme="light"] .verse-card:hover {
+    border-color: #cbd5e1;
 }
 
 .verse-top {
@@ -530,7 +515,6 @@ body.light-mode .verse-card:hover {
     background-color: var(--primary-light);
     padding: 4px 12px;
     border-radius: 20px;
-    transition: background-color 0.3s ease;
 }
 
 .verse-arabic {
@@ -549,7 +533,6 @@ body.light-mode .verse-card:hover {
     text-align: left;
     border-top: 1px dashed var(--border-color);
     padding-top: 15px;
-    transition: border-color 0.3s ease;
 }
 
 .hidden-translation {
@@ -577,9 +560,10 @@ body.light-mode .verse-card:hover {
     animation: slideUp 0.3s ease-out;
 }
 
+/* KEMAS KINI: Warna teks diturunkan kepada warisan (inherit) supaya kekal kontras pada mod cerah/gelap */
 .highlight-word {
     background-color: rgba(46, 196, 182, 0.3);
-    color: #ffffff;
+    color: inherit;
     padding: 2px 4px;
     border-radius: 4px;
 }
@@ -611,7 +595,6 @@ body.light-mode .verse-card:hover {
     text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     animation: slideUp 0.35s ease-out;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .close-radio-btn {
@@ -650,7 +633,6 @@ body.light-mode .verse-card:hover {
     align-items: center;
     justify-content: center;
     margin: 0 auto 25px auto;
-    transition: background-color 0.3s ease;
 }
 
 .radio-visualizer i {
@@ -691,7 +673,6 @@ body.light-mode .verse-card:hover {
     justify-content: space-between;
     margin-bottom: 20px;
     text-align: left;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .qari-selector-wrapper label {
@@ -709,7 +690,6 @@ body.light-mode .verse-card:hover {
     font-size: 13.5px;
     outline: none;
     cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .radio-tips {
@@ -737,10 +717,6 @@ body.light-mode .verse-card:hover {
     justify-content: center;
     gap: 10px;
     margin-top: 15px;
-}
-
-body.light-mode .radio-mode-btn {
-    color: #ffffff; /* Memastikan keterbacaan teks butang mod radio semasa mod cerah */
 }
 
 .mobile-sidebar-toggle {
@@ -877,10 +853,6 @@ body.light-mode .radio-mode-btn {
         gap: 8px;
         cursor: pointer;
         transition: transform 0.2s;
-    }
-
-    body.light-mode .mobile-sidebar-toggle {
-        color: #ffffff;
     }
 
     .mobile-sidebar-toggle:active {
