@@ -14,6 +14,19 @@
     --trans-font-size: 1.05rem;
 }
 
+/* --- TEMA CERAH (LIGHT MODE) --- */
+body.light-theme {
+    --bg-main: #f8f9fa;          
+    --bg-surface: #ffffff;       
+    --bg-surface-hover: #f1f3f5; 
+    --text-primary: #212529;     
+    --text-muted: #6c757d;       
+    --brand-color: #0f9f90;      
+    --brand-glow: rgba(15, 159, 144, 0.2);
+    --border-color: #dee2e6;     
+    --primary-light: #e6f7f5;    
+}
+
 /* --- LOGIK REKA BENTUK INPUT BERSEPADU --- */
 .search-input-wrapper {
     display: flex;
@@ -66,6 +79,7 @@ body {
     color: var(--text-primary);
     display: flex;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
 }
 
@@ -205,7 +219,7 @@ body {
 }
 
 .close-sidebar-btn {
-    display: none; 
+    display: none; /* Hanya muncul di mobile */
     background: transparent;
     border: none;
     color: var(--text-muted);
@@ -697,40 +711,9 @@ body {
     margin-top: 15px;
 }
 
+/* Butang Terapung Lalai disembunyikan (Hanya untuk Mobile) */
 .mobile-sidebar-toggle {
     display: none;
-}
-
-/* --- KOD GAYA GABUNGAN BARU: MOD ASINGKAN TERJEMAHAN SAHAJA & BUTANG SALIN --- */
-.hidden-arabic {
-    display: none !important;
-}
-
-.copy-translation-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: #ffffff;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 5px;
-    transition: all 0.2s ease-in-out;
-}
-
-.copy-translation-btn:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.copy-translation-btn:active {
-    transform: scale(0.98);
 }
 
 /* ==========================================================================
@@ -746,11 +729,12 @@ body {
         flex-direction: column;
     }
 
+    /* Pengepala Utama dilaraskan dengan Safe Area Notch Telefon */
     .main-header {
         position: sticky;
         top: 0;
         width: 100%;
-        padding: 12px 16px;
+        padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px 16px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         z-index: 999;
     }
@@ -769,34 +753,40 @@ body {
         font-size: 14px;
     }
 
+    /* Tukar Sidebar jadi Drawer Sorok/Papar (Overlay Atas Al-Quran) */
     .sidebar {
         position: fixed;
         top: 0;
         left: 0;
         width: 290px !important;
         height: 100vh !important;
+        height: 100dvh !important;
         z-index: 2100;
-        transform: translateX(-100%);
+        transform: translateX(-100%); /* Sembunyi ke kiri skrin asal */
         box-shadow: 5px 0 25px rgba(0,0,0,0.6);
+        padding-top: env(safe-area-inset-top, 0px);
     }
 
+    /* Apabila kelas .open ditambah melalui Javascript */
     .sidebar.open {
         transform: translateX(0);
     }
 
     .close-sidebar-btn {
-        display: block;
+        display: block; /* Papar butang pangkah (✕) */
     }
 
+    /* Menggunakan flex alternatif elak terpotong bawah skrin mudah alih */
     .main-content {
         width: 100% !important;
-        height: calc(100vh - 60px);
+        flex: 1;
+        height: 0;
     }
 
     .reader-container {
         padding: 16px;
         gap: 14px;
-        padding-bottom: 80px;
+        padding-bottom: 80px; /* Ruang tambahan supaya ayat terakhir tidak ditutupi butang terapung */
     }
 
     .bismillah-container {
@@ -812,6 +802,7 @@ body {
         line-height: 2.2;
     }
 
+    /* BUTANG TERAPUNG (FLOATING ACTION BUTTON) DI BAWAH SKRIN MOBILE */
     .mobile-sidebar-toggle {
         display: flex;
         position: fixed;
