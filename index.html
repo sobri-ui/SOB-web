@@ -54,6 +54,9 @@
                 <div class="header-right-arab" id="headerArab"></div>
                 
                 <div class="control-buttons">
+                    <button class="icon-control-btn" id="themeBtn" title="Tukar Tema Cerah/Gelap" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun" id="themeIcon"></i>
+                    </button>
                     <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
                         <i class="fa-solid fa-gear"></i>
                     </button>
@@ -141,11 +144,33 @@
         };
 
         document.addEventListener("DOMContentLoaded", () => {
+            // FUNGSI BAHARU: Semak tema tersimpan semasa halaman dimuatkan
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').className = 'fa-solid fa-moon';
+            }
+
             if (typeof quranData !== 'undefined') {
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
             }
         });
+
+        // FUNGSI BAHARU: Fungsi kawalan penukaran Tema Cerah/Gelap
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
 
         function switchSearchTab(tab, element) {
             currentSearchTab = tab;
