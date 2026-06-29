@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>SOB Al-Quran Digital & Terjemahan Bahasa Melayu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -54,6 +54,9 @@
                 <div class="header-right-arab" id="headerArab"></div>
                 
                 <div class="control-buttons">
+                    <button class="icon-control-btn" id="themeBtn" title="Tukar Tema" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun" id="themeIcon"></i>
+                    </button>
                     <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
                         <i class="fa-solid fa-gear"></i>
                     </button>
@@ -101,18 +104,6 @@
                     <label for="viewModeToggle"><strong>Mod Bacaan Sahaja</strong> (Tanpa Terjemahan)</label>
                     <input type="checkbox" id="viewModeToggle" onchange="toggleTranslationView()">
                 </div>
-                
-                <div class="menu-item-toggle">
-                    <label for="arabicModeToggle"><strong>Mod Terjemahan Sahaja</strong> (Tanpa Teks Arab)</label>
-                    <input type="checkbox" id="arabicModeToggle" onchange="toggleArabicView()">
-                </div>
-                
-                <hr class="menu-divider">
-                
-                <button class="copy-translation-btn" onclick="copyFullTranslation()">
-                    <i class="fa-solid fa-copy"></i> Salin Semua Terjemahan Surah Ini
-                </button>
-                
                 <hr class="menu-divider">
                 
                 <button class="radio-mode-btn" onclick="activateRadioMode()">
@@ -128,7 +119,6 @@
         let currentSearchTab = 'surah';
         let currentSelectedSurah = null;
         let showTranslation = true;
-        let showArabic = true; // Ditambah untuk mengawal paparan teks Arab
         
         let isRadioMode = false;
         let currentRadioSurahNum = 1;
@@ -141,11 +131,36 @@
         };
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Pengesanan tema tersimpan pada peranti local pengguna
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('themeIcon');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                document.body.classList.remove('light-theme');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun';
+            }
+
             if (typeof quranData !== 'undefined') {
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
             }
         });
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
 
         function switchSearchTab(tab, element) {
             currentSearchTab = tab;
@@ -351,7 +366,7 @@
                 const bismillahWrapper = document.createElement('div');
                 bismillahWrapper.className = 'bismillah-wrapper';
                 bismillahWrapper.innerHTML = `
-                    <div class="bismillah-container ${showArabic ? '' : 'hidden-arabic'}">${surah.bismillah}</div>
+                    <div class="bismillah-container">${surah.bismillah}</div>
                     <div class="bismillah-translation ${showTranslation ? '' : 'hidden-translation'}">Dengan nama Allah, Yang Maha Pemurah, lagi Maha Mengasihani.</div>
                 `;
                 reader.appendChild(bismillahWrapper);
@@ -373,7 +388,7 @@
                             <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
                         </div>
                     </div>
-                    <div class="verse-arabic ${showArabic ? '' : 'hidden-arabic'}">${verseText}</div>
+                    <div class="verse-arabic">${verseText}</div>
                     <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${translationText}</div>
                 `;
                 reader.appendChild(verseCard);
@@ -478,73 +493,9 @@
             const isChecked = document.getElementById('viewModeToggle').checked;
             showTranslation = !isChecked;
             
-            if (isChecked) {
-                document.getElementById('arabicModeToggle').checked = false;
-                showArabic = true;
-                document.querySelectorAll('.verse-arabic, .bismillah-container').forEach(div => div.classList.remove('hidden-arabic'));
-            }
-            
             document.querySelectorAll('.verse-translation, .bismillah-translation').forEach(div => {
                 if (showTranslation) div.classList.remove('hidden-translation');
                 else div.classList.add('hidden-translation');
-            });
-        }
-
-        // FUNGSI BARU: Kawalan untuk memaparkan Terjemahan Sahaja (Sembunyi Teks Arab)
-        function toggleArabicView() {
-            const isChecked = document.getElementById('arabicModeToggle').checked;
-            showArabic = !isChecked;
-
-            if (isChecked) {
-                document.getElementById('viewModeToggle').checked = false;
-                showTranslation = true;
-                document.querySelectorAll('.verse-translation, .bismillah-translation').forEach(div => div.classList.remove('hidden-translation'));
-            }
-
-            document.querySelectorAll('.verse-arabic, .bismillah-container').forEach(div => {
-                if (showArabic) div.classList.remove('hidden-arabic');
-                else div.classList.add('hidden-arabic');
-            });
-        }
-
-        // FUNGSI BARU: Menyalin keseluruhan teks terjemahan bagi surah aktif ke clipboard
-        function copyFullTranslation() {
-            if (!currentSelectedSurah || isRadioMode) {
-                alert("Sila pilih surah dalam mod bacaan terlebih dahulu.");
-                return;
-            }
-
-            let textToCopy = `TERJEMAHAN PENUH: SURAH ${currentSelectedSurah.nama_surah_rumi.toUpperCase()} (Surah ke-${currentSelectedSurah.nombor_surah})\n`;
-            textToCopy += `Jumlah Ayat: ${currentSelectedSurah.jumlah_ayat}\n\n`;
-
-            if (currentSelectedSurah.bismillah) {
-                textToCopy += `Dengan nama Allah, Yang Maha Pemurah, lagi Maha Mengasihani.\n\n`;
-            }
-
-            const verses = currentSelectedSurah.teks_kandungan.split('\n');
-            verses.forEach((_, index) => {
-                const verseNo = index + 1;
-                const key = `${currentSelectedSurah.nombor_surah}:${verseNo}`;
-                const translationText = translationData[key] || "Terjemahan tidak ditemui.";
-                textToCopy += `[${currentSelectedSurah.nombor_surah}:${verseNo}] ${translationText}\n`;
-            });
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const btn = document.querySelector('.copy-translation-btn');
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Berjaya Disalin!`;
-                btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)';
-                btn.style.color = '#ffffff';
-
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                    btn.style.color = '';
-                }, 2500);
-            }).catch(err => {
-                console.error("Gagal menyalin teks: ", err);
-                alert("Ralat! Gagal menyalin teks terjemahan.");
             });
         }
 
