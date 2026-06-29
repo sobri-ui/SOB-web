@@ -2,15 +2,12 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOB Al-Quran Digital & Terjemahan Bahasa Melayu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1c1c1f">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <script src="quran.js"></script>
     <script src="translation_efficient.js"></script>
@@ -21,61 +18,55 @@
         <i class="fa-solid fa-list-ul"></i> Senarai Surah
     </button>
 
-    <div class="app-container">
-        <div class="sidebar" id="sidebarContainer">
-            <div class="sidebar-header">
-                <div class="sidebar-top-row">
-                    <h1><span>📖</span> SOB Al-Quran</h1>
-                    <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">&times;</button>
-                </div>
-                
-                <div class="search-container">
-                    <div class="search-tabs">
-                        <button class="tab-btn active" onclick="switchSearchTab('surah', this)">Surah</button>
-                        <button class="tab-btn" onclick="switchSearchTab('juzuk', this)">Juzuk</button>
-                        <button class="tab-btn" onclick="switchSearchTab('teks', this)">Cari Teks</button>
-                    </div>
-                    <div class="search-input-wrapper">
-                        <input type="text" id="searchSurah" class="search-box" placeholder="Cari nama atau nombor surah...">
-                        <button id="searchActionBtn" class="search-trigger-btn hidden-btn" onclick="executeAdvancedSearch()">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </div>
-                </div>
+    <div class="sidebar" id="sidebarContainer">
+        <div class="sidebar-header">
+            <div class="sidebar-top-row">
+                <h1><span>📖</span> SOB Al-Quran</h1>
+                <button class="close-sidebar-btn" onclick="toggleMobileSidebar()">&times;</button>
             </div>
             
-            <div class="surah-list" id="surahListContainer"></div>
+            <div class="search-container">
+                <div class="search-tabs">
+                    <button class="tab-btn active" onclick="switchSearchTab('surah', this)">Surah</button>
+                    <button class="tab-btn" onclick="switchSearchTab('juzuk', this)">Juzuk</button>
+                    <button class="tab-btn" onclick="switchSearchTab('teks', this)">Cari Teks</button>
+                </div>
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchSurah" class="search-box" placeholder="Cari nama atau nombor surah...">
+                    <button id="searchActionBtn" class="search-trigger-btn hidden-btn" onclick="executeAdvancedSearch()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
         </div>
+        
+        <div class="surah-list" id="surahListContainer"></div>
+    </div>
 
-        <div class="main-content">
-            <div class="main-header" id="mainHeader">
-                <div class="header-left">
-                    <h2 id="headerTitle">Sila Pilih Surah</h2>
-                    <div class="meta-desc" id="headerMeta">-</div>
-                </div>
-                
-                <div class="header-right-controls">
-                    <div class="header-right-arab" id="headerArab"></div>
-                    
-                    <div class="control-buttons">
-                        <button class="icon-control-btn" id="themeToggleBtn" title="Tukar Tema" onclick="toggleTheme()">
-                            <i class="fa-solid fa-sun" id="themeIcon"></i>
-                        </button>
-                        
-                        <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
-                            <i class="fa-solid fa-gear"></i>
-                        </button>
-                        <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </div>
-                </div>
+    <div class="main-content">
+        <div class="main-header" id="mainHeader">
+            <div class="header-left">
+                <h2 id="headerTitle">Sila Pilih Surah</h2>
+                <div class="meta-desc" id="headerMeta">-</div>
             </div>
             
-            <div class="reader-container" id="readerContainer">
-                <div class="status-msg">
-                    <p>Memuatkan data... Sila pilih Surah atau gunakan tab carian di sebelah kiri.</p>
+            <div class="header-right-controls">
+                <div class="header-right-arab" id="headerArab"></div>
+                
+                <div class="control-buttons">
+                    <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <button class="icon-control-btn" id="menuBtn" title="Menu Pilihan" onclick="toggleModal('menuDropdownModal')">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
                 </div>
+            </div>
+        </div>
+        
+        <div class="reader-container" id="readerContainer">
+            <div class="status-msg">
+                <p>Memuatkan data... Sila pilih Surah atau gunakan tab carian di sebelah kiri.</p>
             </div>
         </div>
     </div>
@@ -99,7 +90,7 @@
         </div>
     </div>
 
-<div id="menuDropdownModal" class="custom-modal">
+    <div id="menuDropdownModal" class="custom-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-bars"></i> Menu Pilihan</h3>
@@ -137,6 +128,7 @@
         let currentSearchTab = 'surah';
         let currentSelectedSurah = null;
         let showTranslation = true;
+        let showArabic = true; // Ditambah untuk mengawal paparan teks Arab
         
         let isRadioMode = false;
         let currentRadioSurahNum = 1;
@@ -148,29 +140,7 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
-        // --- SISTEM TUKAR TEMA (LIGHT & DARK THEME) ---
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            document.documentElement.setAttribute('data-theme', targetTheme);
-            localStorage.setItem('sob-quran-theme', targetTheme);
-            updateThemeIcon(targetTheme);
-        }
-
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (icon) {
-                icon.className = theme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-            }
-        }
-
-        // Semak tema memori lokal peranti
-        const savedTheme = localStorage.getItem('sob-quran-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
         document.addEventListener("DOMContentLoaded", () => {
-            updateThemeIcon(savedTheme);
             if (typeof quranData !== 'undefined') {
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
@@ -381,7 +351,7 @@
                 const bismillahWrapper = document.createElement('div');
                 bismillahWrapper.className = 'bismillah-wrapper';
                 bismillahWrapper.innerHTML = `
-                    <div class="bismillah-container">${surah.bismillah}</div>
+                    <div class="bismillah-container ${showArabic ? '' : 'hidden-arabic'}">${surah.bismillah}</div>
                     <div class="bismillah-translation ${showTranslation ? '' : 'hidden-translation'}">Dengan nama Allah, Yang Maha Pemurah, lagi Maha Mengasihani.</div>
                 `;
                 reader.appendChild(bismillahWrapper);
@@ -403,7 +373,7 @@
                             <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
                         </div>
                     </div>
-                    <div class="verse-arabic">${verseText}</div>
+                    <div class="verse-arabic ${showArabic ? '' : 'hidden-arabic'}">${verseText}</div>
                     <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${translationText}</div>
                 `;
                 reader.appendChild(verseCard);
@@ -508,9 +478,73 @@
             const isChecked = document.getElementById('viewModeToggle').checked;
             showTranslation = !isChecked;
             
+            if (isChecked) {
+                document.getElementById('arabicModeToggle').checked = false;
+                showArabic = true;
+                document.querySelectorAll('.verse-arabic, .bismillah-container').forEach(div => div.classList.remove('hidden-arabic'));
+            }
+            
             document.querySelectorAll('.verse-translation, .bismillah-translation').forEach(div => {
                 if (showTranslation) div.classList.remove('hidden-translation');
                 else div.classList.add('hidden-translation');
+            });
+        }
+
+        // FUNGSI BARU: Kawalan untuk memaparkan Terjemahan Sahaja (Sembunyi Teks Arab)
+        function toggleArabicView() {
+            const isChecked = document.getElementById('arabicModeToggle').checked;
+            showArabic = !isChecked;
+
+            if (isChecked) {
+                document.getElementById('viewModeToggle').checked = false;
+                showTranslation = true;
+                document.querySelectorAll('.verse-translation, .bismillah-translation').forEach(div => div.classList.remove('hidden-translation'));
+            }
+
+            document.querySelectorAll('.verse-arabic, .bismillah-container').forEach(div => {
+                if (showArabic) div.classList.remove('hidden-arabic');
+                else div.classList.add('hidden-arabic');
+            });
+        }
+
+        // FUNGSI BARU: Menyalin keseluruhan teks terjemahan bagi surah aktif ke clipboard
+        function copyFullTranslation() {
+            if (!currentSelectedSurah || isRadioMode) {
+                alert("Sila pilih surah dalam mod bacaan terlebih dahulu.");
+                return;
+            }
+
+            let textToCopy = `TERJEMAHAN PENUH: SURAH ${currentSelectedSurah.nama_surah_rumi.toUpperCase()} (Surah ke-${currentSelectedSurah.nombor_surah})\n`;
+            textToCopy += `Jumlah Ayat: ${currentSelectedSurah.jumlah_ayat}\n\n`;
+
+            if (currentSelectedSurah.bismillah) {
+                textToCopy += `Dengan nama Allah, Yang Maha Pemurah, lagi Maha Mengasihani.\n\n`;
+            }
+
+            const verses = currentSelectedSurah.teks_kandungan.split('\n');
+            verses.forEach((_, index) => {
+                const verseNo = index + 1;
+                const key = `${currentSelectedSurah.nombor_surah}:${verseNo}`;
+                const translationText = translationData[key] || "Terjemahan tidak ditemui.";
+                textToCopy += `[${currentSelectedSurah.nombor_surah}:${verseNo}] ${translationText}\n`;
+            });
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const btn = document.querySelector('.copy-translation-btn');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Berjaya Disalin!`;
+                btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)';
+                btn.style.color = '#ffffff';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2500);
+            }).catch(err => {
+                console.error("Gagal menyalin teks: ", err);
+                alert("Ralat! Gagal menyalin teks terjemahan.");
             });
         }
 
@@ -545,8 +579,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Service Worker Aktif!', reg.scope))
-                    .catch(err => console.log('PWA Gagal Didaftarkan:', err));
+                    .then(reg => console.log('PWA Aktif:', reg.scope))
+                    .catch(err => console.log('PWA Gagal:', err));
             });
         }
     </script>
