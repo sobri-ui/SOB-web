@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <div id="menuDropdownModal" class="custom-modal">
+<div id="menuDropdownModal" class="custom-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-bars"></i> Menu Pilihan</h3>
@@ -110,6 +110,18 @@
                     <label for="viewModeToggle"><strong>Mod Bacaan Sahaja</strong> (Tanpa Terjemahan)</label>
                     <input type="checkbox" id="viewModeToggle" onchange="toggleTranslationView()">
                 </div>
+                
+                <div class="menu-item-toggle">
+                    <label for="arabicModeToggle"><strong>Mod Terjemahan Sahaja</strong> (Tanpa Teks Arab)</label>
+                    <input type="checkbox" id="arabicModeToggle" onchange="toggleArabicView()">
+                </div>
+                
+                <hr class="menu-divider">
+                
+                <button class="copy-translation-btn" onclick="copyFullTranslation()">
+                    <i class="fa-solid fa-copy"></i> Salin Semua Terjemahan Surah Ini
+                </button>
+                
                 <hr class="menu-divider">
                 
                 <button class="radio-mode-btn" onclick="activateRadioMode()">
