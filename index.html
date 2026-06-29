@@ -54,7 +54,7 @@
                 <div class="header-right-arab" id="headerArab"></div>
                 
                 <div class="control-buttons">
-                    <button class="icon-control-btn" id="themeBtn" title="Tukar Tema Cerah/Gelap" onclick="toggleTheme()">
+                    <button class="icon-control-btn" id="themeBtn" title="Tukar Tema" onclick="toggleTheme()">
                         <i class="fa-solid fa-sun" id="themeIcon"></i>
                     </button>
                     <button class="icon-control-btn" id="settingsBtn" title="Tetapan Paparan" onclick="toggleModal('settingsModal')">
@@ -131,7 +131,7 @@
         let currentSearchTab = 'surah';
         let currentSelectedSurah = null;
         let showTranslation = true;
-        let showArabic = true; // Ditambah untuk mengawal paparan teks Arab
+        let showArabic = true; 
         
         let isRadioMode = false;
         let currentRadioSurahNum = 1;
@@ -143,13 +143,11 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
+        // KEMAS KINI: Pemuatan tema disimpan semasa DOM bersedia
         document.addEventListener("DOMContentLoaded", () => {
-            // FUNGSI BAHARU: Semak tema tersimpan semasa halaman dimuatkan
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('themeIcon').className = 'fa-solid fa-moon';
-            }
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
 
             if (typeof quranData !== 'undefined') {
                 renderSurahList(quranData);
@@ -157,18 +155,26 @@
             }
         });
 
-        // FUNGSI BAHARU: Fungsi kawalan penukaran Tema Cerah/Gelap
+        // FUNGSI BAHARU: Logik penukaran tema cerah/gelap
         function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            body.classList.toggle('light-mode');
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             
-            if (body.classList.contains('light-mode')) {
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        // FUNGSI BAHARU: Mengemas kini ikon mengikut tema aktif
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeBtn = document.getElementById('themeBtn');
+            if (theme === 'light') {
                 themeIcon.className = 'fa-solid fa-moon';
-                localStorage.setItem('theme', 'light');
+                themeBtn.title = "Tukar Tema Gelap";
             } else {
                 themeIcon.className = 'fa-solid fa-sun';
-                localStorage.setItem('theme', 'dark');
+                themeBtn.title = "Tukar Tema Cerah";
             }
         }
 
@@ -515,7 +521,6 @@
             });
         }
 
-        // FUNGSI BARU: Kawalan untuk memaparkan Terjemahan Sahaja (Sembunyi Teks Arab)
         function toggleArabicView() {
             const isChecked = document.getElementById('arabicModeToggle').checked;
             showArabic = !isChecked;
@@ -532,7 +537,6 @@
             });
         }
 
-        // FUNGSI BARU: Menyalin keseluruhan teks terjemahan bagi surah aktif ke clipboard
         function copyFullTranslation() {
             if (!currentSelectedSurah || isRadioMode) {
                 alert("Sila pilih surah dalam mod bacaan terlebih dahulu.");
