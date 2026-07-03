@@ -143,7 +143,6 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
-        // KEMAS KINI: Pemuatan tema disimpan semasa DOM bersedia
         document.addEventListener("DOMContentLoaded", () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -155,7 +154,6 @@
             }
         });
 
-        // FUNGSI BAHARU: Logik penukaran tema cerah/gelap
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -165,7 +163,6 @@
             updateThemeIcon(newTheme);
         }
 
-        // FUNGSI BAHARU: Mengemas kini ikon mengikut tema aktif
         function updateThemeIcon(theme) {
             const themeIcon = document.getElementById('themeIcon');
             const themeBtn = document.getElementById('themeBtn');
@@ -350,7 +347,7 @@
                                     <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
                                 </div>
                             </div>
-                            <div class="verse-arabic">${highlightedArabic}</div>
+                            <div class="verse-arabic ${showArabic ? '' : 'hidden-arabic'}">${highlightedArabic}</div>
                             <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${highlightedTranslation}</div>
                         `;
                         resultsContainer.appendChild(resultCard);
@@ -594,6 +591,12 @@
             } else {
                 document.querySelectorAll('.custom-modal').forEach(m => m.style.display = 'none');
                 modal.style.display = "flex";
+                
+                // Pastikan status checkbox selari dengan tetapan global semasa modal dibuka
+                if(modalId === 'menuDropdownModal') {
+                    document.getElementById('viewModeToggle').checked = !showTranslation;
+                    document.getElementById('arabicModeToggle').checked = !showArabic;
+                }
             }
         }
 
