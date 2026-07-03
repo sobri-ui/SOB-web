@@ -62,7 +62,7 @@
 /* --- INTEGRASI FON UTMANIC SCRIPT --- */
 @font-face {
     font-family: 'KFGQPC Hafs Uthmanic Script';
-    src: url('SOB KFGQPC HAFS Uthmanic Script Regular.woff2') format('woff2');
+    src: url('quran-font.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -704,7 +704,7 @@ body {
 
 .radio-mode-btn {
     width: 100%;
-    background: linear-gradient(135deg, #2ec4b6 0%, #24a89c 100%);
+    background: linear-gradient(135deg, #2ec4b6 0%, #24a89c(100%));
     color: #121214;
     border: none;
     padding: 12px;
