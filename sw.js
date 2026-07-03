@@ -1,10 +1,10 @@
-const CACHE_NAME = 'quran-cache-v2';
+const CACHE_NAME = 'quran-cache-v3';
 const ASSETS = [
   'index.html',
   'style.css',
   'quran.js',
   'translation_efficient.js',
-  'SOB KFGQPC HAFS Uthmanic Script Regular.woff2',
+  'quran-font.woff2',
   'manifest.json',
   'icon-192.png',
   'icon-512.png'
