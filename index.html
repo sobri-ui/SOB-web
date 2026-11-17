@@ -143,12 +143,53 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
+        // FUNGSI BAHARU: Semak & asingkan Basmalah yang bersambung dengan ayat 1 pada semua surah
+        function sanitizeQuranData() {
+            if (typeof quranData === 'undefined') return;
+
+            // Pelbagai variasi ejaan Basmalah (Rasm Uthmani & Imlaei)
+            const bismillahPatterns = [
+                /^بِسْمِ\s+ٱللَّهِ\s+ٱلرَّحْمَـٰنِ\s+ٱلرَّحِيمِ\s*/,
+                /^بِسْمِ\s+اللَّهِ\s+الرَّحْمَٰنِ\s+الرَّحِيمِ\s*/,
+                /^بِسْمِ\s+اللَّهِ\s+الرَّحْمَنِ\s+الرَّحِيمِ\s*/,
+                /^بسم\s+الله\s+الرحمن\s+الرحيم\s*/
+            ];
+
+            quranData.forEach(surah => {
+                // Kecualikan Surah 1 (Al-Fatihah - Basmalah ialah ayat 1) dan Surah 9 (At-Taubah - tiada Basmalah)
+                if (surah.nombor_surah === 1 || surah.nombor_surah === 9) return;
+
+                let verses = surah.teks_kandungan.split('\n');
+                if (verses.length > 0) {
+                    let firstVerse = verses[0].trim();
+                    
+                    for (let pattern of bismillahPatterns) {
+                        const match = firstVerse.match(pattern);
+                        if (match) {
+                            const extractedBismillah = match[0].trim();
+                            // Buang Basmalah daripada ayat pertama
+                            verses[0] = firstVerse.replace(pattern, '').trim();
+                            surah.teks_kandungan = verses.join('\n');
+
+                            // Pastikan Basmalah dipaparkan di bahagian atas secara berasingan
+                            if (!surah.bismillah || surah.bismillah.trim() === '') {
+                                surah.bismillah = extractedBismillah;
+                            }
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        // KEMAS KINI: Pemuatan tema disimpan & pembersihan data semasa DOM bersedia
         document.addEventListener("DOMContentLoaded", () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
 
             if (typeof quranData !== 'undefined') {
+                sanitizeQuranData(); // Jalankan semakan & pembetulan automatik
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
             }
@@ -347,7 +388,7 @@
                                     <button class="action-btn" onclick="playVerseAudio(${surah.nombor_surah}, ${verseNo})"><i class="fa-solid fa-play"></i> Dengar</button>
                                 </div>
                             </div>
-                            <div class="verse-arabic ${showArabic ? '' : 'hidden-arabic'}">${highlightedArabic}</div>
+                            <div class="verse-arabic">${highlightedArabic}</div>
                             <div class="verse-translation ${showTranslation ? '' : 'hidden-translation'}">${highlightedTranslation}</div>
                         `;
                         resultsContainer.appendChild(resultCard);
@@ -591,12 +632,6 @@
             } else {
                 document.querySelectorAll('.custom-modal').forEach(m => m.style.display = 'none');
                 modal.style.display = "flex";
-                
-                // Pastikan status checkbox selari dengan tetapan global semasa modal dibuka
-                if(modalId === 'menuDropdownModal') {
-                    document.getElementById('viewModeToggle').checked = !showTranslation;
-                    document.getElementById('arabicModeToggle').checked = !showArabic;
-                }
             }
         }
 
