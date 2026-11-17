@@ -150,7 +150,8 @@
                 .replace(/[^\u0621-\u063A\u0641-\u064A]/g, '');
         }
 
-        // FUNGSI UTAMA: Mengesan & mengasingkan Basmalah bersabdu/berbaris pada semua surah
+        // FUNGSI UTAMA: Mengesan & mengasingkan Basmalah bersabdu/berbaris pada AYAT 1 sahaja
+        // (Kecuali Surah 1 Al-Fatihah, Surah 9 At-Taubah, dan tidak menyentuh ayat 30 Surah 27 An-Naml)
         function sanitizeQuranData() {
             if (typeof quranData === 'undefined') return;
 
@@ -161,8 +162,9 @@
                 let verses = surah.teks_kandungan.split('\n');
                 if (verses.length === 0) return;
 
+                // Hanya semak verses[0] (Ayat pertama surah sahaja).
+                // Ayat ke-30 dalam Surah An-Naml (verses[29]) tidak akan disentuh sama sekali.
                 let firstVerse = verses[0].trim();
-                // Pecahkan ayat pertama mengikut ruang kosong (termasuk ruang Unicode khas)
                 let tokens = firstVerse.split(/[\s\u00A0\u200B-\u200D\uFEFF]+/).filter(Boolean);
 
                 if (tokens.length > 4) {
@@ -179,9 +181,7 @@
                     );
 
                     if (isBismillah) {
-                        // Ambil 4 perkataan pertama beserta baris penuhnya sebagai Basmalah
                         const extractedBismillah = tokens.slice(0, 4).join(' ');
-                        // Bakinya ialah ayat nombor 1 yang sebenar
                         const cleanFirstVerse = tokens.slice(4).join(' ');
 
                         verses[0] = cleanFirstVerse;
@@ -189,7 +189,6 @@
 
                         // Letakkan Basmalah ke ruang atas secara berasingan
                         surah.bismillah = extractedBismillah;
-                        console.log(`Basmalah diasingkan pada Surah ${surah.nombor_surah}: ${surah.nama_surah_rumi}`);
                     }
                 }
             });
