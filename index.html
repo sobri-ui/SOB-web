@@ -143,53 +143,57 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
-        // FUNGSI BAHARU: Semak & asingkan Basmalah yang bersambung dengan ayat 1 pada semua surah
+        // FUNGSI KEBAL UNICODE: Mengesan & mengasingkan Basmalah tanpa terganggu oleh perbezaan tanda baris halus
         function sanitizeQuranData() {
             if (typeof quranData === 'undefined') return;
-
-            // Pelbagai variasi ejaan Basmalah (Rasm Uthmani & Imlaei)
-            const bismillahPatterns = [
-                /^بِسْمِ\s+ٱللَّهِ\s+ٱلرَّحْمَـٰنِ\s+ٱلرَّحِيمِ\s*/,
-                /^بِسْمِ\s+اللَّهِ\s+الرَّحْمَٰنِ\s+الرَّحِيمِ\s*/,
-                /^بِسْمِ\s+اللَّهِ\s+الرَّحْمَنِ\s+الرَّحِيمِ\s*/,
-                /^بسم\s+الله\s+الرحمن\s+الرحيم\s*/
-            ];
 
             quranData.forEach(surah => {
                 // Kecualikan Surah 1 (Al-Fatihah - Basmalah ialah ayat 1) dan Surah 9 (At-Taubah - tiada Basmalah)
                 if (surah.nombor_surah === 1 || surah.nombor_surah === 9) return;
 
                 let verses = surah.teks_kandungan.split('\n');
-                if (verses.length > 0) {
-                    let firstVerse = verses[0].trim();
+                if (verses.length === 0) return;
+
+                let firstVerse = verses[0].trim();
+                let words = firstVerse.split(/\s+/);
+
+                // Basmalah mengandungi tepat 4 patah perkataan Arab
+                if (words.length > 4) {
+                    const firstFourWordsRaw = words.slice(0, 4).join(' ');
                     
-                    for (let pattern of bismillahPatterns) {
-                        const match = firstVerse.match(pattern);
-                        if (match) {
-                            const extractedBismillah = match[0].trim();
-                            // Buang Basmalah daripada ayat pertama
-                            verses[0] = firstVerse.replace(pattern, '').trim();
+                    // Buang semua tanda baris (harakat, tatweel, dll) dan normalkan huruf Alif (ٱ -> ا)
+                    const normalizedFourWords = firstFourWordsRaw
+                        .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
+                        .replace(/[ٱأإآ]/g, 'ا');
+
+                    // Semak jika 4 perkataan pertama ialah Basmalah
+                    if (normalizedFourWords === 'بسم الله الرحمن الرحيم' || normalizedFourWords === 'بسم الله الرحمان الرحيم') {
+                        // Cari kedudukan sebenar perkataan ke-5 dalam rentetan asal (termasuk tanda baris penuh)
+                        const matchCut = firstVerse.match(/^(?:\S+\s+){4}/);
+                        if (matchCut) {
+                            const extractedBismillah = matchCut[0].trim();
+                            const remainingVerse1 = firstVerse.slice(matchCut[0].length).trim();
+
+                            verses[0] = remainingVerse1;
                             surah.teks_kandungan = verses.join('\n');
 
-                            // Pastikan Basmalah dipaparkan di bahagian atas secara berasingan
+                            // Letakkan Basmalah ke ruang atas secara berasingan jika belum wujud
                             if (!surah.bismillah || surah.bismillah.trim() === '') {
                                 surah.bismillah = extractedBismillah;
                             }
-                            break;
                         }
                     }
                 }
             });
         }
 
-        // KEMAS KINI: Pemuatan tema disimpan & pembersihan data semasa DOM bersedia
         document.addEventListener("DOMContentLoaded", () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
 
             if (typeof quranData !== 'undefined') {
-                sanitizeQuranData(); // Jalankan semakan & pembetulan automatik
+                sanitizeQuranData();
                 renderSurahList(quranData);
                 displaySurah(quranData[0]);
             }
@@ -646,7 +650,10 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Aktif:', reg.scope))
+                    .then(reg => {
+                        reg.update(); // Paksa semak kemas kini fail baharu
+                        console.log('PWA Aktif:', reg.scope);
+                    })
                     .catch(err => console.log('PWA Gagal:', err));
             });
         }
