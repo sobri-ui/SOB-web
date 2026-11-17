@@ -143,45 +143,53 @@
             21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78
         };
 
-        // FUNGSI KEBAL UNICODE: Mengesan & mengasingkan Basmalah tanpa terganggu oleh perbezaan tanda baris halus
+        // Fungsi pembantu: Tinggalkan huruf asas Arab sahaja (buang sabdu, baris bawah/atas, simbol khas)
+        function stripToBaseArabic(str) {
+            return str
+                .replace(/[ٱأإآ]/g, 'ا')
+                .replace(/[^\u0621-\u063A\u0641-\u064A]/g, '');
+        }
+
+        // FUNGSI UTAMA: Mengesan & mengasingkan Basmalah bersabdu/berbaris pada semua surah
         function sanitizeQuranData() {
             if (typeof quranData === 'undefined') return;
 
             quranData.forEach(surah => {
-                // Kecualikan Surah 1 (Al-Fatihah - Basmalah ialah ayat 1) dan Surah 9 (At-Taubah - tiada Basmalah)
+                // Kecualikan Surah 1 (Al-Fatihah) dan Surah 9 (At-Taubah)
                 if (surah.nombor_surah === 1 || surah.nombor_surah === 9) return;
 
                 let verses = surah.teks_kandungan.split('\n');
                 if (verses.length === 0) return;
 
                 let firstVerse = verses[0].trim();
-                let words = firstVerse.split(/\s+/);
+                // Pecahkan ayat pertama mengikut ruang kosong (termasuk ruang Unicode khas)
+                let tokens = firstVerse.split(/[\s\u00A0\u200B-\u200D\uFEFF]+/).filter(Boolean);
 
-                // Basmalah mengandungi tepat 4 patah perkataan Arab
-                if (words.length > 4) {
-                    const firstFourWordsRaw = words.slice(0, 4).join(' ');
-                    
-                    // Buang semua tanda baris (harakat, tatweel, dll) dan normalkan huruf Alif (ٱ -> ا)
-                    const normalizedFourWords = firstFourWordsRaw
-                        .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
-                        .replace(/[ٱأإآ]/g, 'ا');
+                if (tokens.length > 4) {
+                    const w1 = stripToBaseArabic(tokens[0]); // بسم
+                    const w2 = stripToBaseArabic(tokens[1]); // الله
+                    const w3 = stripToBaseArabic(tokens[2]); // الرحمن / الرحمان
+                    const w4 = stripToBaseArabic(tokens[3]); // الرحيم
 
-                    // Semak jika 4 perkataan pertama ialah Basmalah
-                    if (normalizedFourWords === 'بسم الله الرحمن الرحيم' || normalizedFourWords === 'بسم الله الرحمان الرحيم') {
-                        // Cari kedudukan sebenar perkataan ke-5 dalam rentetan asal (termasuk tanda baris penuh)
-                        const matchCut = firstVerse.match(/^(?:\S+\s+){4}/);
-                        if (matchCut) {
-                            const extractedBismillah = matchCut[0].trim();
-                            const remainingVerse1 = firstVerse.slice(matchCut[0].length).trim();
+                    const isBismillah = (
+                        w1 === 'بسم' &&
+                        w2 === 'الله' &&
+                        (w3 === 'الرحمن' || w3 === 'الرحمان') &&
+                        w4 === 'الرحيم'
+                    );
 
-                            verses[0] = remainingVerse1;
-                            surah.teks_kandungan = verses.join('\n');
+                    if (isBismillah) {
+                        // Ambil 4 perkataan pertama beserta baris penuhnya sebagai Basmalah
+                        const extractedBismillah = tokens.slice(0, 4).join(' ');
+                        // Bakinya ialah ayat nombor 1 yang sebenar
+                        const cleanFirstVerse = tokens.slice(4).join(' ');
 
-                            // Letakkan Basmalah ke ruang atas secara berasingan jika belum wujud
-                            if (!surah.bismillah || surah.bismillah.trim() === '') {
-                                surah.bismillah = extractedBismillah;
-                            }
-                        }
+                        verses[0] = cleanFirstVerse;
+                        surah.teks_kandungan = verses.join('\n');
+
+                        // Letakkan Basmalah ke ruang atas secara berasingan
+                        surah.bismillah = extractedBismillah;
+                        console.log(`Basmalah diasingkan pada Surah ${surah.nombor_surah}: ${surah.nama_surah_rumi}`);
                     }
                 }
             });
@@ -651,7 +659,7 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(reg => {
-                        reg.update(); // Paksa semak kemas kini fail baharu
+                        reg.update();
                         console.log('PWA Aktif:', reg.scope);
                     })
                     .catch(err => console.log('PWA Gagal:', err));
