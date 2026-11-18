@@ -150,8 +150,9 @@
                 .replace(/[^\u0621-\u063A\u0641-\u064A]/g, '');
         }
 
-        // FUNGSI UTAMA: Mengesan & mengasingkan Basmalah bersabdu/berbaris pada AYAT 1 sahaja
-        // (Kecuali Surah 1 Al-Fatihah, Surah 9 At-Taubah, dan tidak menyentuh ayat 30 Surah 27 An-Naml)
+        // FUNGSI UTAMA: 
+        // 1. Asingkan Basmalah bersabdu/berbaris pada AYAT 1 (kecuali Al-Fatihah & At-Taubah)
+        // 2. Pulihkan Basmalah pada Surah An-Naml (27:30) sekiranya hilang dalam quran.js
         function sanitizeQuranData() {
             if (typeof quranData === 'undefined') return;
 
@@ -162,8 +163,7 @@
                 let verses = surah.teks_kandungan.split('\n');
                 if (verses.length === 0) return;
 
-                // Hanya semak verses[0] (Ayat pertama surah sahaja).
-                // Ayat ke-30 dalam Surah An-Naml (verses[29]) tidak akan disentuh sama sekali.
+                // LANGKAH 1: Semak dan asingkan Basmalah pada ayat pertama (verses[0])
                 let firstVerse = verses[0].trim();
                 let tokens = firstVerse.split(/[\s\u00A0\u200B-\u200D\uFEFF]+/).filter(Boolean);
 
@@ -185,12 +185,32 @@
                         const cleanFirstVerse = tokens.slice(4).join(' ');
 
                         verses[0] = cleanFirstVerse;
-                        surah.teks_kandungan = verses.join('\n');
-
-                        // Letakkan Basmalah ke ruang atas secara berasingan
                         surah.bismillah = extractedBismillah;
                     }
                 }
+
+                // LANGKAH 2: Pulihkan Basmalah dalam Surah An-Naml (Surah 27, Ayat 30 -> index 29)
+                if (surah.nombor_surah === 27 && verses.length >= 30) {
+                    let verse30 = verses[29].trim();
+                    let baseVerse30 = stripToBaseArabic(verse30);
+
+                    // Semak jika Basmalah tiada dalam ayat 30 (hanya ada "انه من سليمان وانه")
+                    if (!baseVerse30.includes('بسمالله')) {
+                        // Jika ayat 30 berakhir dengan simbol nombor ayat (seperti ۝ atau ﴿٣٠﴾), sisipkan sebelum simbol tersebut
+                        const endSymbolMatch = verse30.match(/(\s*[\u06DD\uFD3E\uFD3F\d٠-٩\(\)]+\s*)$/);
+                        const bismillahUthmani = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ";
+
+                        if (endSymbolMatch) {
+                            const textPart = verse30.slice(0, endSymbolMatch.index).trim();
+                            const symbolPart = endSymbolMatch[0];
+                            verses[29] = `${textPart} ${bismillahUthmani}${symbolPart}`;
+                        } else {
+                            verses[29] = `${verse30} ${bismillahUthmani}`;
+                        }
+                    }
+                }
+
+                surah.teks_kandungan = verses.join('\n');
             });
         }
 
